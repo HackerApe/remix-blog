@@ -2,7 +2,10 @@
   "private": true,
   "name": "remix-app-template",
   "description": "",
-  "license": "",
+  "license": "MIT",
+  "prisma": {
+    "seed": "node prisma/seed"
+  },
   "scripts": {
     "build": "remix build",
     "dev": "remix dev",

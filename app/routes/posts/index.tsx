@@ -1,19 +1,20 @@
 import { useLoaderData, Link } from "remix"
+import { db } from "~/utils/db.server"
 
 interface iPostData {
   id: any
   title: string
   body: string
+  createdAt: Date
 }
 
-export const loader = () => {
+export const loader = async () => {
   const data = {
-    posts: [
-      { id: 1, title: "First post", body: "This is a test post" },
-      { id: 2, title: "Second post", body: "This is a test post" },
-      { id: 3, title: "Third post", body: "This is a test post" },
-      { id: 4, title: "Fourth post", body: "This is a test post" }
-    ]
+    posts: await db.post.findMany({
+      take: 20,
+      select: { id: true, title: true, createdAt: true },
+      orderBy: { createdAt: "desc" }
+    })
   }
   return data
 }
@@ -35,6 +36,7 @@ export default function PostList() {
           <li key={post.id}>
             <Link to={post.id}>
               <h3>{post.title}</h3>
+              {new Date(post.createdAt).toLocaleString()}
             </Link>
           </li>
         ))}

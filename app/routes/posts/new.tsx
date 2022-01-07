@@ -1,6 +1,7 @@
 import { Link, redirect, useActionData, json, ActionFunction } from "remix"
 import { db } from "~/utils/db.server"
 
+const badRequest = (data) => json(data, { status: 400 })
 const validateTitle = (title: string) => {
   if (typeof title !== "string" || title.length < 3)
     return "Title should be at least 3 characters long"
@@ -21,7 +22,7 @@ export const action = async ({ request }) => {
 
   if (Object.values(fieldErrors).some(Boolean)) {
     console.log(fieldErrors)
-    return json({ fieldErrors, fields }, { status: 400 })
+    return badRequest({ fieldErrors, fields })
   }
 
   // Submitting to db

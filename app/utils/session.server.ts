@@ -74,7 +74,7 @@ export const getUser = async (request: Request) => {
 
 // Logout user and destroy session
 export const logout = async (request: Request) => {
-  const session = await getUserSession(request.headers.get("Cookie"))
+  const session = await storage.getSession(request.headers.get("Cookie"))
 
   return redirect("/auth/logout", {
     headers: { "Set-Cookie": await storage.destroySession(session) }

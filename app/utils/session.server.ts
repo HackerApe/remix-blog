@@ -8,7 +8,7 @@ interface IAuth {
 }
 
 // Login user
-export async function login({ username, password }: IAuth) {
+export const login = async ({ username, password }: IAuth) => {
   const user = await db.user.findUnique({ where: { username } })
 
   if (!user) return null
@@ -21,7 +21,7 @@ export async function login({ username, password }: IAuth) {
 }
 
 // Sign up user
-export async function signup({ username, password }: IAuth) {
+export const signup = async ({ username, password }: IAuth) => {
   const hashedPassword = await bcrypt.hash(password, 10)
   return db.user.create({ data: { username, hashedPassword } })
 }
@@ -44,21 +44,22 @@ const storage = createCookieSessionStorage({
 })
 
 // Create session
-export async function createUserSession(userId: string, redirectTo: string) {
+export const createUserSession = async (userId: string, redirectTo: string) => {
   const session = await storage.getSession()
+
   session.set("userId", userId)
+
   return redirect(redirectTo, {
     headers: { "Set-Cookie": await storage.commitSession(session) }
   })
 }
 
 // Get user session
-export function getUserSession(request: Request) {
-  return storage.getSession(request.headers.get("Cookie"))
-}
+export const getUserSession = (request: Request) =>
+  storage.getSession(request.headers.get("Cookie"))
 
 // Get logged in user
-export async function getUser(request: Request) {
+export const getUser = async (request: Request) => {
   const session = await getUserSession(request)
   const userId = session.get("userId")
 
@@ -66,15 +67,15 @@ export async function getUser(request: Request) {
   try {
     const user = await db.user.findUnique({ where: { id: userId } })
     return user
-  } catch (error) {
+  } catch (e) {
     return null
   }
 }
 
 // Logout user and destroy session
-export async function logout(request: Request) {
-  console.log("logout was called...")
-  const session = await storage.getSession(request.headers.get("Cookie"))
+export const logout = async (request: Request) => {
+  const session = await getUserSession(request.headers.get("Cookie"))
+
   return redirect("/auth/logout", {
     headers: { "Set-Cookie": await storage.destroySession(session) }
   })

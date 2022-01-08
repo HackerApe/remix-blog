@@ -1,7 +1,7 @@
 const { PrismaClient } = require("@prisma/client")
 const prisma = new PrismaClient()
 
-async function seed() {
+const seed = async () => {
   const john = await prisma.user.create({
     data: {
       username: "john",
@@ -20,7 +20,7 @@ async function seed() {
 
 seed()
 
-function getPosts() {
+const getPosts = () => {
   return [
     {
       title: "JavaScript Performance Tips",

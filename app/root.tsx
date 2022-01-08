@@ -1,10 +1,11 @@
 import { PropsWithChildren } from "react"
 import { Outlet, LiveReload, Link, Links, Meta, useLoaderData } from "remix"
+import type { LoaderFunction } from "remix"
 import globalStylesUrl from "~/styles/global.css"
 import { getUser } from "./utils/session.server"
 
 interface AppProps {
-  title: string
+  title?: string
 }
 
 export const links = () => [{ rel: "stylesheet", href: globalStylesUrl }]
@@ -15,13 +16,13 @@ export const meta = () => {
   return { description, keywords }
 }
 
-export const loader = async ({ request }): LoaderFunction => {
+export const loader: LoaderFunction = async ({ request }) => {
   const user = await getUser(request)
   const data = { user }
   return data
 }
 
-export default function App() {
+const App = () => {
   return (
     <Document>
       <Layout>
@@ -31,7 +32,7 @@ export default function App() {
   )
 }
 
-function Document({ children, title }: PropsWithChildren<AppProps>) {
+const Document = ({ children, title }: PropsWithChildren<AppProps>) => {
   return (
     <html lang='en'>
       <head>
@@ -47,7 +48,7 @@ function Document({ children, title }: PropsWithChildren<AppProps>) {
   )
 }
 
-function Layout({ children }) {
+const Layout = ({ children }: PropsWithChildren<{}>) => {
   const { user } = useLoaderData()
 
   return (
@@ -82,7 +83,7 @@ function Layout({ children }) {
   )
 }
 
-export function ErrorBoundary({ error }) {
+export const ErrorBoundary = ({ error }) => {
   return (
     <Document>
       <Layout>
@@ -94,3 +95,5 @@ export function ErrorBoundary({ error }) {
     </Document>
   )
 }
+
+export default App

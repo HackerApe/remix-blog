@@ -1,4 +1,5 @@
-import { Link, redirect, useActionData, json, ActionFunction } from "remix"
+import { Link, redirect, useActionData, json } from "remix"
+import type { ActionFunction } from "remix"
 import { db } from "~/utils/db.server"
 
 const badRequest = (data) => json(data, { status: 400 })
@@ -11,7 +12,7 @@ const validateBody = (body: string) => {
     return "Body should be at least 10 characters long"
 }
 
-export const action = async ({ request }) => {
+export const action = async ({ request }): ActionFunction => {
   const form = await request.formData()
 
   const title = form.get("title")

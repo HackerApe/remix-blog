@@ -1,30 +1,21 @@
-import {
-  ActionFunction,
-  Link,
-  LoaderFunction,
-  redirect,
-  useLoaderData
-} from "remix"
+import { Link, redirect, useLoaderData } from "remix"
+import type { LoaderFunction, ActionFunction } from "remix"
 import { db } from "~/utils/db.server"
 
-export async function loader({ params }): LoaderFunction {
+export const loader: LoaderFunction = async ({ params }) => {
   const post = await db.post.findUnique({ where: { id: params.postId } })
 
   if (!post) throw new Error("Post not found...")
   return post
 }
 
-export async function action({ request, params }): ActionFunction {
-  const form = await request.formData()
+export const action: ActionFunction = async ({ params, request }) => {
+  const post = await db.post.findUnique({ where: { id: params.postId } })
 
-  if (form.get("_method") === "delete") {
-    const post = await db.post.findUnique({ where: { id: params.postId } })
+  if (!post) throw new Error("Post not found...")
 
-    if (!post) throw new Error("Post not found...")
-
-    await db.post.delete({ where: { id: params.postId } })
-    return redirect("/posts/")
-  }
+  await db.post.delete({ where: { id: params.postId } })
+  return redirect("/posts/")
 }
 
 export default function Post() {

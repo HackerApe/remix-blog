@@ -1,4 +1,5 @@
 import { useLoaderData, Link } from "remix"
+import type { LoaderFunction } from "remix"
 import { db } from "~/utils/db.server"
 
 interface iPostData {
@@ -8,7 +9,7 @@ interface iPostData {
   createdAt: Date
 }
 
-export const loader = async () => {
+export const loader = async (): LoaderFunction => {
   const data = {
     posts: await db.post.findMany({
       take: 20,

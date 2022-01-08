@@ -1,18 +1,21 @@
-import { useActionData, json, redirect } from "remix"
+import { useActionData, json } from "remix"
+import type { ActionFunction } from "remix"
 import { db } from "~/utils/db.server"
 import { login, createUserSession, signup } from "~/utils/session.server"
 
 const badRequest = (data: object) => json(data, { status: 400 })
+
 const validateUsername = (username: string) => {
   if (typeof username !== "string" || username.length < 3)
     return "Username must be at least 3 characters long"
 }
+
 const validatePassword = (password: string) => {
   if (typeof password !== "string" || password.length < 6)
     return "Password must be at least 3 characters long"
 }
 
-export async function action({ request }) {
+export const action: ActionFunction = async ({ request }) => {
   const form = await request.formData()
 
   const loginType = form.get("loginType")
@@ -30,16 +33,14 @@ export async function action({ request }) {
 
   switch (loginType) {
     case "login": {
-      console.log("login type")
-
-      // Find user
+      // Find the user
       const user = await login({ username, password })
 
-      // Check user
+      // Check if the user exists
       if (!user)
         return badRequest({
           fields,
-          fieldErrors: { username: "Invalid credentials" }
+          fieldErrors: { username: "Invalid credentials..." }
         })
 
       // Create user session
@@ -49,6 +50,7 @@ export async function action({ request }) {
     case "signUp": {
       // Check if the user exists
       const userExists = await db.user.findFirst({ where: { username } })
+
       if (userExists)
         return badRequest({
           fields,
